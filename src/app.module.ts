@@ -8,8 +8,14 @@ import { JwtModule } from './jwt/jwt.module';
 import { MailModule } from './mail/mail.module';
 
 @Module({
-  imports: [UserModule, ConfigModule.forRoot(), AuthModule, JwtModule, MailModule],
+  imports: [
+    UserModule,
+    ConfigModule.forRoot(),
+    AuthModule,
+    JwtModule,
+    MailModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

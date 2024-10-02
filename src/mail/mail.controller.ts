@@ -4,11 +4,13 @@ import { MailService } from './mail.service';
 
 @Controller('mail')
 export class MailController {
-    constructor(private readonly mailService: MailService) { }
+  constructor(private readonly mailService: MailService) {}
 
-    @Post('send-verification')
-    async sendVerification(@Body() sendVerificationDto: SendVerificationDto) {
-        const mailVerification = await this.mailService.createMailVerification(sendVerificationDto.email);
-        this.mailService.sendVerificationCode(mailVerification);
-    }
+  @Post('send-verification')
+  async sendVerification(@Body() sendVerificationDto: SendVerificationDto) {
+    const mailVerification = await this.mailService.createMailVerification(
+      sendVerificationDto.email,
+    );
+    this.mailService.sendVerificationCode(mailVerification);
+  }
 }

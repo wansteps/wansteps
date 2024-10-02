@@ -8,6 +8,6 @@ import { MailController } from './mail.controller';
   imports: [DrizzleModule, ConfigModule],
   providers: [MailService],
   exports: [MailService],
-  controllers: [MailController]
+  controllers: [MailController],
 })
-export class MailModule { }
+export class MailModule {}
