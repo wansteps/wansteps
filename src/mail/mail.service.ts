@@ -20,6 +20,7 @@ export class MailService {
   private readonly logger = new Logger(MailService.name);
 
   private client: Dm20151123;
+  private mailAllowedList: string[];
 
   constructor(
     @Inject(DrizzleAsyncProvider)
@@ -35,6 +36,11 @@ export class MailService {
     // Endpoint 请参考 https://api.aliyun.com/product/Dm
     config.endpoint = `dm.aliyuncs.com`;
     this.client = new Dm20151123(config);
+
+    this.mailAllowedList = configService.get<string>('MAIL_ALLOWED_LIST', '')
+      .split(',')
+      .map(email => email.trim())
+      .filter(email => email.length > 0);
   }
 
   async sendVerificationCode({ email, code }: IMailVerification) {
@@ -60,6 +66,9 @@ export class MailService {
   }
 
   async createMailVerification(email: string): Promise<IMailVerification> {
+    if (this.isEmailNotAllowed(email)) {
+      throw new BadRequestException('Email not allowed');
+    }
     const code = this.generateRandomCode();
     const mailVerification = { email, code };
     const existingCode = await this.db.query.mailVerification.findFirst({
@@ -111,5 +120,11 @@ export class MailService {
 
   private isSendFrequently(updatedAt: Date): boolean {
     return Date.now() - new Date(updatedAt).getTime() < 1 * 60 * 1000;
+  }
+
+  private isEmailNotAllowed(email: string): boolean {
+    return (
+      this.mailAllowedList.length == 0 || !this.mailAllowedList.includes(email)
+    );
   }
 }

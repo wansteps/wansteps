@@ -15,11 +15,11 @@ export class AuthService {
   ) {}
 
   async signUp({ name, email, code, password1, password2 }: SignUpDto) {
-    await this.mailService.verifyCode(email, code);
     const user = await this.userService.findByEmail(email);
     if (user) {
       throw new ConflictException('Email already in use');
     }
+    await this.mailService.verifyCode(email, code);
     this.comparePasswords(password1, password2);
     return await this.userService.create(name, email, password1);
   }
