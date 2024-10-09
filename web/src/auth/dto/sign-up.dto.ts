@@ -29,5 +29,5 @@ export class SignUpDto extends PasswordsDto {
 
   @IsString()
   @Length(6, 6)
-  code!: string;
+  verificationCode!: string;
 }
