@@ -1,20 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, Length } from 'class-validator';
-import { PasswordsDto } from './passwords.dto';
+import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import { PASSWORD_REGEX } from 'src/common/consts/regex.const';
 
-export class SignUpDto extends PasswordsDto {
-  @ApiProperty({
-    description: 'The user name',
-    minLength: 3,
-    maxLength: 100,
-    type: String,
-  })
-  @IsString()
-  @Length(3, 100, {
-    message: 'Name has to be between 3 and 100 characters.',
-  })
-  name!: string;
-
+export class SignUpDto {
   @ApiProperty({
     description: 'The user email',
     example: 'example@gmail.com',
@@ -27,6 +15,26 @@ export class SignUpDto extends PasswordsDto {
   @Length(5, 255)
   email!: string;
 
+  @ApiProperty({
+    description: 'New password',
+    minLength: 8,
+    maxLength: 35,
+    type: String,
+  })
+  @IsString()
+  @Length(8, 35)
+  @Matches(PASSWORD_REGEX, {
+    message:
+      'Password requires a lowercase letter, an uppercase letter, and a number or symbol',
+  })
+  password!: string;
+
+  @ApiProperty({
+    description: 'The verification code',
+    example: '123456',
+    minLength: 6,
+    maxLength: 6,
+  })
   @IsString()
   @Length(6, 6)
   verificationCode!: string;

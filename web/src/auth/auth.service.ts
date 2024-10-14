@@ -14,14 +14,13 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  async signUp({ name, email, verificationCode, password1, password2 }: SignUpDto) {
+  async signUp({ email, verificationCode, password }: SignUpDto) {
     const user = await this.userService.findByEmail(email);
     if (user) {
       throw new ConflictException('Email already in use');
     }
     await this.mailService.verifyCode(email, verificationCode);
-    this.comparePasswords(password1, password2);
-    return await this.userService.create(name, email, password1);
+    return await this.userService.create({ name: 'nickname', email, password });
   }
 
   private comparePasswords(password1: string, password2: string) {

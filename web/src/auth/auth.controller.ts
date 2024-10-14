@@ -6,6 +6,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
+import { IMessage } from 'src/common/interface/message.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +22,10 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: 'Something is invalid on the request body',
   })
-  signUp(@Body() signUpDto: SignUpDto) {
-    return this.authService.signUp(signUpDto);
+  async signUp(@Body() signUpDto: SignUpDto): Promise<IMessage> {
+    await this.authService.signUp(signUpDto);
+    return {
+      message: 'User created successfully',
+    };
   }
 }
