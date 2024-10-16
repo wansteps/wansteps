@@ -12,5 +12,7 @@ export class MailController {
       sendVerificationDto.email,
     );
     this.mailService.sendVerificationCode(mailVerification);
+
+    return { success: true };
   }
 }

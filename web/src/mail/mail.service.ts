@@ -37,10 +37,11 @@ export class MailService {
     config.endpoint = `dm.aliyuncs.com`;
     this.client = new Dm20151123(config);
 
-    this.mailAllowedList = configService.get<string>('MAIL_ALLOWED_LIST', '')
+    this.mailAllowedList = configService
+      .get<string>('MAIL_ALLOWED_LIST', '')
       .split(',')
-      .map(email => email.trim())
-      .filter(email => email.length > 0);
+      .map((email) => email.trim())
+      .filter((email) => email.length > 0);
   }
 
   async sendVerificationCode({ email, code }: IMailVerification) {
@@ -75,7 +76,9 @@ export class MailService {
       where: eq(schema.mailVerification.email, email),
     });
     if (existingCode && this.isSendFrequently(existingCode.updatedAt)) {
-      throw new BadRequestException('发送频率太快，请稍后再试');
+      throw new BadRequestException(
+        'Sending frequency is too high, please try again later.',
+      );
     }
     this.db
       .insert(schema.mailVerification)
@@ -89,8 +92,7 @@ export class MailService {
   }
 
   private generateRandomCode(): string {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters = '0123456789';
     return Array.from(
       { length: 6 },
       () => characters[Math.floor(Math.random() * characters.length)],

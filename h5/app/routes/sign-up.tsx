@@ -5,6 +5,8 @@ import { Input } from "~/components/ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "~/components/ui/form";
+import { toast } from "~/hooks/use-toast";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -26,10 +28,55 @@ export default function SignUp() {
   })
  
   // 2. Define a submit handler.
-  const onSubmit = (values: z.infer<typeof formSchema>) =>   {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  const onSubmit = (data: z.infer<typeof formSchema>) =>   {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    })
+  }
+
+  const sendVerificationCode = () => {
+    const button = document.querySelector('button');
+    const emailInput = document.querySelector('input[name="email"]');
+    const email = emailInput.value;
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+      alert('请输入有效的邮箱地址');
+      return;
+    }
+    button.disabled = true;
+    let seconds = 60;
+    const interval = setInterval(() => {
+      button.textContent = `发送验证码(${seconds}秒)`;
+      seconds--;
+      if (seconds === 0) {
+        clearInterval(interval);
+        button.disabled = false;
+        button.textContent = '发送验证码';
+      }
+    }, 1000);
+    fetch(`${window.ENV.API_URL}/mail/send-verification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('验证码已发送，请检查您的邮箱。');
+      } else {
+        alert('发送验证码失败，请重试。');
+      }
+    })
+    .catch(error => {
+      console.error('Error sending verification code:', error);
+      alert('发送验证码失败，请重试。');
+    });
   }
 
 
@@ -39,42 +86,46 @@ export default function SignUp() {
         <div className="relative mx-auto grid min-w-[540px] gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">
-              创建账号
+              创建账户
             </h1>
             <p className="text-balance text-muted-foreground">
               
             </p>
           </div>
-          <form className="grid gap-4">
-            <div className="flex flex-col w-full space-y-2">
-              <Input
-                type="email"
-                placeholder="name@example.com"
-                name="email"
-
-                required
-              />
-              <Input
-                type="password"
-                placeholder="密码"
-                name="password"
-                required
-              />
-              <Input
-                type="text"
-                placeholder="验证码"
-                name="verificationCode"
-                required
-              />
-              <Button type="submit">注册</Button>
-            </div>
-          </form>
+          <Form {...form} className="grid gap-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} method="post" autoComplete="off" className="grid gap-4">
+              <div className="flex flex-col w-full space-y-2">
+                <Input
+                  type="email"
+                  placeholder="name@example.com"
+                  name="email"
+                  required
+                />
+                <Input
+                  type="password"
+                  placeholder="密码"
+                  name="password"
+                  required
+                />
+                <div className="flex items-center space-x-2">
+                  <Input
+                    type="text"
+                    placeholder="验证码"
+                    name="verificationCode"
+                    required
+                  />
+                  <Button type="button" onClick={sendVerificationCode}>发送验证码</Button>
+                </div>
+                <Button type="submit">创建账户</Button>
+              </div>
+            </form>
+          </Form>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">或者继续已有账号</span>
+              <span className="bg-background px-2 text-muted-foreground">或者继续使用</span>
             </div>
           </div> 
           <Button>

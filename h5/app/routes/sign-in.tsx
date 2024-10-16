@@ -36,7 +36,7 @@ export default function SignIn() {
         <div className="relative mx-auto grid min-w-[540px] gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">
-              登录账号
+              登录账户
             </h1>
             <p className="text-balance text-muted-foreground">
               
@@ -66,7 +66,7 @@ export default function SignIn() {
               <span className="w-full border-t"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">或者继续已有账号</span>
+              <span className="bg-background px-2 text-muted-foreground">或者继续使用</span>
             </div>
           </div> 
           <Button>
