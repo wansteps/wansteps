@@ -1,11 +1,11 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DrizzleAsyncProvider } from '../drizzle/drizzle.provider';
 import * as schema from '../drizzle/schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -14,9 +14,8 @@ export class UserService {
   ) {}
 
   async create({ name, email, password }: CreateUserDto) {
-    const saltOrRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltOrRounds);
-    const userData = { name, email, hashedPassword };
+    const passwordHash = await bcrypt.hash(password, 10);
+    const userData = { name, email, password: passwordHash };
     return this.db.insert(schema.user).values(userData).returning();
   }
 
@@ -34,6 +33,19 @@ export class UserService {
       throw new BadRequestException(`User not found`);
     }
     return user;
+  }
+
+  async resetPassword(email: string, password: string) {
+    const user = await this.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException(`User not found`);
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+    this.db
+      .update(schema.user)
+      .set({ password: passwordHash })
+      .where(eq(schema.user.id, user.id))
+      .execute();
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

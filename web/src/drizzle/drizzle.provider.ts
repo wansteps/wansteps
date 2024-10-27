@@ -15,7 +15,10 @@ export const drizzleProvider = [
         connectionString,
       });
 
-      return drizzle(pool, { schema }) as NodePgDatabase<typeof schema>;
+      return drizzle(pool, {
+        schema,
+        logger: process.env.NODE_ENV !== 'prod',
+      }) as NodePgDatabase<typeof schema>;
     },
   },
 ];

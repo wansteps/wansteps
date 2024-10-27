@@ -6,13 +6,29 @@ import {
 import { MailService } from 'src/mail/mail.service';
 import { UserService } from '../user/user.service';
 import { SignUpDto } from './dto/sign-up.dto';
+import { JwtService } from '@nestjs/jwt';
+import { SignInDto } from './dto/sign-in.dto';
+import * as bcrypt from 'bcrypt';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly mailService: MailService,
+    private readonly jwtService: JwtService,
   ) {}
+
+  async signIn({ email, password }: SignInDto) {
+    const user = await this.userService.findByEmail(email);
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      throw new BadRequestException('Invalid credentials');
+    }
+    const playload = { sub: user.id, email: user.email };
+    return {
+      access_token: this.jwtService.sign(playload),
+    };
+  }
 
   async signUp({ email, verificationCode, password }: SignUpDto) {
     const user = await this.userService.findByEmail(email);
@@ -23,9 +39,12 @@ export class AuthService {
     return await this.userService.create({ name: 'nickname', email, password });
   }
 
-  private comparePasswords(password1: string, password2: string) {
-    if (password1 !== password2) {
-      throw new BadRequestException('Passwords do not match');
-    }
+  async resetPassword({
+    email,
+    password,
+    verificationCode: code,
+  }: ResetPasswordDto) {
+    await this.mailService.verifyCode(email, code);
+    await this.userService.resetPassword(email, password);
   }
 }
