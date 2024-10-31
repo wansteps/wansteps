@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, SetMetadata } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -12,11 +12,13 @@ import { SignInDto } from './dto/sign-in.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { HttpCode } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
+import { Public } from './auth.meta';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
   @ApiBadRequestResponse({
@@ -26,6 +28,7 @@ export class AuthController {
     return await this.authService.signIn(signInDto);
   }
 
+  @Public()
   @Post('sign-up')
   @ApiCreatedResponse({
     description: 'The user has been created',

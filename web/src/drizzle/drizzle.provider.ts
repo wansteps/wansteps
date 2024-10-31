@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as schema from './schema';
+import { Profile } from 'src/common/enums/profile.enum';
 
 export const DrizzleAsyncProvider = 'DrizzleAsyncProvider';
 
@@ -17,7 +18,7 @@ export const drizzleProvider = [
 
       return drizzle(pool, {
         schema,
-        logger: process.env.NODE_ENV !== 'prod',
+        logger: process.env.NODE_ENV !== Profile.PROD,
       }) as NodePgDatabase<typeof schema>;
     },
   },

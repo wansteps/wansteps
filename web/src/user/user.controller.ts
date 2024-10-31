@@ -7,8 +7,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const result = await this.userService.findOne(+id);
+    return { ...result, password: undefined };
   }
 
   @Patch(':id')
