@@ -6,8 +6,14 @@ export const user = pgTable('user', {
   email: varchar('email', { length: 255 }).unique(),
   phoneNumber: varchar('phone_number', { length: 255 }).unique(),
   password: varchar('password', { length: 255 }).notNull(),
+  refreshTokenHash: varchar('refresh_token_hash', { length: 255 })
+    .notNull()
+    .default(''),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at')
+    .notNull()
+    .defaultNow()
+    .$onUpdateFn(() => new Date()),
 });
 
 export type User = typeof user.$inferSelect;

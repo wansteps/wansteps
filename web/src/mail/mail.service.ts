@@ -62,7 +62,8 @@ export class MailService {
       );
     } catch (error) {
       this.logger.error(error);
-      this.logger.error(error.data['Recommend']);
+      const errorData = error as { data?: { Recommend?: string } };
+      this.logger.error(errorData.data?.['Recommend']);
     }
   }
 

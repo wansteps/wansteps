@@ -15,6 +15,13 @@
       "when": 1730014456377,
       "tag": "20241027073416_wild_bucky",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730476492123,
+      "tag": "20241101155452_clammy_eddie_brock",
+      "breakpoints": true
     }
   ]
 }

@@ -12,5 +12,5 @@ export class SendVerificationDto {
   @IsString()
   @IsEmail()
   @Length(5, 255)
-  email: string;
+  email!: string;
 }

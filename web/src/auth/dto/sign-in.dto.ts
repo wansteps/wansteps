@@ -12,9 +12,9 @@ export class SignInDto {
   @IsString()
   @IsEmail()
   @Length(5, 255)
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
-  password: string;
+  password!: string;
 }

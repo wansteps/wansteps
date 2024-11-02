@@ -3,6 +3,7 @@ import {
   ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -12,7 +13,9 @@ import { SignInDto } from './dto/sign-in.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { HttpCode } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
-import { Public } from './auth.meta';
+import { getCurrentUser, getCurrentUserId, Public } from './decorators';
+import { UseGuards } from '@nestjs/common';
+import { RtGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -45,6 +48,24 @@ export class AuthController {
       message: 'User created successfully',
     };
   }
+
+  @Public()
+  @UseGuards(RtGuard)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'The refresh token has been exchanged for a new access token',
+  })
+  @ApiForbiddenResponse({
+    description: 'Access denied',
+  })
+  refreshTokens(
+    @getCurrentUserId() userId: number,
+    @getCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    return this.authService.refreshTokens(userId, refreshToken);
+  }
+
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({

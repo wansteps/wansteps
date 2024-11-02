@@ -6,6 +6,7 @@ import * as schema from '../drizzle/schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -15,8 +16,10 @@ export class UserService {
 
   async create({ name, email, password }: CreateUserDto) {
     const passwordHash = await bcrypt.hash(password, 10);
-    const userData = { name, email, password: passwordHash };
-    return this.db.insert(schema.user).values(userData).returning();
+    return this.db
+      .insert(schema.user)
+      .values({ name, email, password: passwordHash } as schema.User)
+      .returning();
   }
 
   async findByEmail(email: string) {

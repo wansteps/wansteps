@@ -8,7 +8,7 @@ export default defineConfig({
     prefix: 'supabase',
   },
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL || '',
   },
   verbose: true,
   strict: true,
