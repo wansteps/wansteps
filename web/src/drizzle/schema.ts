@@ -5,7 +5,7 @@ export const user = pgTable('user', {
   name: varchar('name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).unique(),
   phoneNumber: varchar('phone_number', { length: 255 }).unique(),
-  password: varchar('password', { length: 255 }).notNull(),
+  passwordHash: varchar('password_hash', { length: 255 }).notNull(),
   refreshTokenHash: varchar('refresh_token_hash', { length: 255 })
     .notNull()
     .default(''),

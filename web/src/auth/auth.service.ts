@@ -31,7 +31,7 @@ export class AuthService {
 
   async signIn({ email, password }: SignInDto) {
     const user = await this.userService.findByEmail(email);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       throw new BadRequestException('Invalid credentials');
     }
     const tokens = await this.generateTokens(user.id, email);
