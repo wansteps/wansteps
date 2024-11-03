@@ -1,0 +1,12 @@
+{
+  "name": "wanlilu",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "web:dev": "pnpm --filter web run start:dev",
+    "h5:dev": "pnpm --filter h5 run dev"
+  }
+}
