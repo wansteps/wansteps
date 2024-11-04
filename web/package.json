@@ -28,6 +28,7 @@
     "@alicloud/openapi-client": "^0.4.12",
     "@alicloud/tea-util": "^1.4.9",
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "*",
@@ -49,7 +50,6 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
-    "@nestjs/config": "^3.2.3",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
     "@types/bcrypt": "^5.0.2",
