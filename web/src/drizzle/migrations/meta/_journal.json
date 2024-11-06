@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1728487445963,
-      "tag": "20241009152405_secret_patch",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1730014456377,
-      "tag": "20241027073416_wild_bucky",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1730476492123,
-      "tag": "20241101155452_clammy_eddie_brock",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1730600739777,
-      "tag": "20241103022539_faulty_rick_jones",
+      "when": 1730908017262,
+      "tag": "20241106154657_create_user_and_mail_verification",
       "breakpoints": true
     }
   ]

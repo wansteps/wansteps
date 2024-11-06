@@ -1,6 +1,6 @@
 {
-  "id": "5e16860b-64c1-4da0-afdd-e3ab0fc1fb3e",
-  "prevId": "c28dd12c-a002-422c-84d9-c8b0571acef7",
+  "id": "88e21a28-214a-46a5-a3cf-7bb1688aba6a",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -82,11 +82,18 @@
           "primaryKey": false,
           "notNull": false
         },
-        "password": {
-          "name": "password",
+        "password_hash": {
+          "name": "password_hash",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
+        },
+        "refresh_token_hash": {
+          "name": "refresh_token_hash",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
         },
         "created_at": {
           "name": "created_at",
