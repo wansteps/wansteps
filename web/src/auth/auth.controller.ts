@@ -5,6 +5,7 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -24,7 +25,7 @@ export class AuthController {
   @Public()
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
-  @ApiBadRequestResponse({
+  @ApiUnauthorizedResponse({
     description: 'Invalid credentials',
   })
   async signIn(@Body() signInDto: SignInDto) {

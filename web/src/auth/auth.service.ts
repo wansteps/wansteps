@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { MailService } from '../mail/mail.service';
@@ -32,7 +33,7 @@ export class AuthService {
   async signIn({ email, password }: SignInDto) {
     const user = await this.userService.findByEmail(email);
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-      throw new BadRequestException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
     const tokens = await this.generateTokens(user.id, email);
     await this.updateRefreshTokenHash(user.id, tokens.refreshToken);

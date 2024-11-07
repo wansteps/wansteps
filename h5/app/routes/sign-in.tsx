@@ -2,33 +2,10 @@ import { Link, useActionData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node"; 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-})
+import { authenticator } from "~/services/auth.server";
 
 export default function SignIn() {
   const actionData = useActionData<typeof action>();
-
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  })
-
-  // 2. Define a submit handler.
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
-  }
 
   return (
     <div className="w-full lg:grid lg:grid-cols-10 min-h-screen flex sm:items-center sm:justify-center sm:grid">
@@ -39,24 +16,29 @@ export default function SignIn() {
               登录账户
             </h1>
             <p className="text-balance text-muted-foreground">
-              
+              {
+                actionData?.error && <div className="error">
+                  <p className="text-red-500">
+                    Invalid credentials
+                  </p>
+                </div>
+              }
             </p>
           </div>
-          <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <form method="post" className="grid gap-4">
             <div className="flex flex-col w-full space-y-2">
               <Input
                 type="email"
                 placeholder="邮箱"
                 name="email"
                 required
-                {...form.register("email")}
               />
               <Input
                 type="password"
-                placeholder="密码"
                 name="password"
+                placeholder="密码"
+                autoComplete="current-password"
                 required
-                {...form.register("password")}
               />
               <Button type="submit">登录</Button>
             </div>
@@ -85,21 +67,17 @@ export default function SignIn() {
 export async function action({
   request, 
 }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const email = String(formData.get("email"));
-  const password = String(formData.get("password"));
-  
-  const response = await fetch(`${process.env.API_URL}/auth/sign-in`, {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  }); 
-  if (response.status === 400) {
-    return json(await response.json());
-  }
-  if (response.status === 200) {
-    return redirect("/dashboard");
-  }
+  return await authenticator.authenticate("user-pass", request, {
+    successRedirect: "/",
+    failureRedirect: "/sign-in",
+  });
+}
 
-  return redirect("/");
-}     
+export async function loader({
+  request,
+}: LoaderFunctionArgs) {
+  return await authenticator.isAuthenticated(request, {
+    successRedirect: "/",
+  });
+}
 
