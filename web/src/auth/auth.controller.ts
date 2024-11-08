@@ -8,7 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
-import { IMessage } from 'src/common/interface/message.interface';
+import { IMessage } from '../common/interface/message.interface';
 import { SignInDto } from './dto/sign-in.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { HttpCode } from '@nestjs/common';

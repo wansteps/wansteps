@@ -16,9 +16,9 @@ import { ConfigService } from '@nestjs/config';
 import { Tokens } from './types';
 import { ForbiddenException } from '@nestjs/common';
 import * as argon2 from 'argon2';
-import { DrizzleAsyncProvider } from 'src/drizzle/drizzle.provider';
+import { DrizzleAsyncProvider } from '../drizzle/drizzle.provider';
 import { Inject } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 @Injectable()
 export class AuthService {
   constructor(
