@@ -23,7 +23,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post('sign-in')
+  @Post('token')
   @HttpCode(HttpStatus.OK)
   @ApiUnauthorizedResponse({
     description: 'Invalid credentials',

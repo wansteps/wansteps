@@ -1,4 +1,4 @@
-import { Authenticator } from "remix-auth";
+import { Authenticator, AuthorizationError } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { signIn } from "~/lib/sign-in";
 import { sessionStorage } from "~/services/session.server";
@@ -11,7 +11,17 @@ authenticator.use(
   new FormStrategy(async ({ form }) => {
     const email = form.get("email");
     const password = form.get("password");
-    return await signIn(email, password);
+    const response = await fetch(`${process.env.API_URL}/auth/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    if (response.status >= 400) {
+      throw new AuthorizationError("Invalid credentials");
+    }
+    return response.json();
   }),
   "user-pass"
 );

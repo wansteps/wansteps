@@ -1,4 +1,4 @@
-import { Link, useActionData } from "@remix-run/react";
+import { Link, useFetcher } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node"; 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -15,7 +15,8 @@ const formSchema = z.object({
 })
 
 export default function SignUp() {
-  const actionData = useActionData<typeof action>();
+  const fetcher = useFetcher();
+  const actionData = fetcher.data;
 
    // 1. Define your form.
    const form = useForm<z.infer<typeof formSchema>>({
@@ -50,7 +51,7 @@ export default function SignUp() {
     button.disabled = true;
     let seconds = 60;
     const interval = setInterval(() => {
-      button.textContent = `发送验证码(${seconds}秒)`;
+      button.textContent = `(${seconds}s)`;
       seconds--;
       if (seconds === 0) {
         clearInterval(interval);
@@ -58,7 +59,7 @@ export default function SignUp() {
         button.textContent = '发送验证码';
       }
     }, 1000);
-    fetch(`${window.ENV.API_URL}/mail/send-verification`, {
+    fetch(`${process.env.API_URL}/mail/send-verification`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -81,9 +82,9 @@ export default function SignUp() {
 
 
   return (
-    <div className="w-full lg:grid lg:grid-cols-10 min-h-screen flex sm:items-center sm:justify-center sm:grid">
-      <div className="flex items-center justify-center py-12 lg:col-start-4 lg:col-span-4 px-8">
-        <div className="relative mx-auto grid min-w-[540px] gap-6">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="min-w-full md:min-w-[540px] px-4 py-12">
+        <div className="relative mx-auto grid gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">
               创建账户
@@ -98,6 +99,7 @@ export default function SignUp() {
                 <Input
                   type="email"
                   placeholder="name@example.com"
+                  autoComplete="email"
                   name="email"
                   required
                 />
@@ -151,6 +153,9 @@ export async function action({
   
   const response = await fetch(`${process.env.API_URL}/auth/sign-up`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ email, password, verificationCode }),
   }); 
   if (response.status === 400) {

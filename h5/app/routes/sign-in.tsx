@@ -1,32 +1,31 @@
-import { Link, useActionData } from "@remix-run/react";
-import { json, redirect } from "@remix-run/node"; 
+import { Link, useFetcher } from "@remix-run/react";
+import { json } from "@remix-run/node"; 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { authenticator } from "~/services/auth.server";
+import { AuthorizationError } from "remix-auth";
 
 export default function SignIn() {
-  const actionData = useActionData<typeof action>();
+  const fetcher = useFetcher();
+  const actionData = fetcher.data;
 
   return (
-    <div className="w-full lg:grid lg:grid-cols-10 min-h-screen flex sm:items-center sm:justify-center sm:grid">
-      <div className="flex items-center justify-center py-12 lg:col-start-4 lg:col-span-4 px-8">
-        <div className="relative mx-auto grid min-w-[540px] gap-6">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="min-w-full md:min-w-[540px] px-4 py-12">
+        <div className="relative mx-auto grid gap-6">
           <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-2xl font-bold">
               登录账户
             </h1>
-            <p className="text-balance text-muted-foreground">
-              {
-                actionData?.error && <div className="error">
-                  <p className="text-red-500">
-                    Invalid credentials
-                  </p>
-                </div>
-              }
-            </p>
+            {
+              actionData?.error && (
+                <p className="text-balance text-muted-foreground text-red-500">
+                  {actionData.error}
+                </p>
+            )}
           </div>
-          <form method="post" className="grid gap-4">
-            <div className="flex flex-col w-full space-y-2">
+          <fetcher.Form method="post" className="grid gap-4">
+            <div className="flex flex-col space-y-2">
               <Input
                 type="email"
                 placeholder="邮箱"
@@ -40,9 +39,9 @@ export default function SignIn() {
                 autoComplete="current-password"
                 required
               />
-              <Button type="submit">登录</Button>
+              <Button disabled={fetcher.state === "submitting"} type="submit">登录</Button>
             </div>
-          </form>
+          </fetcher.Form>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t"></span>
@@ -67,10 +66,20 @@ export default function SignIn() {
 export async function action({
   request, 
 }: ActionFunctionArgs) {
-  return await authenticator.authenticate("user-pass", request, {
-    successRedirect: "/",
-    failureRedirect: "/sign-in",
-  });
+  try {
+    return await authenticator.authenticate("user-pass", request, {
+      successRedirect: "/",
+      throwOnError: true,
+    });
+  } catch (error) {
+    if (error instanceof Response) {
+      return error;
+    }
+    if (error instanceof AuthorizationError) {
+      return json({ error: error.message }, { status: 401 });
+    }
+    return json({ error: "Unknown error" }, { status: 500 });
+  }
 }
 
 export async function loader({
