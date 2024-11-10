@@ -28,14 +28,4 @@ export class SignUpDto {
       'Password requires a lowercase letter, an uppercase letter, and a number or symbol',
   })
   password!: string;
-
-  @ApiProperty({
-    description: 'The verification code',
-    example: '123456',
-    minLength: 6,
-    maxLength: 6,
-  })
-  @IsString()
-  @Length(6, 6)
-  verificationCode!: string;
 }

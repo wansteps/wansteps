@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -44,9 +44,22 @@ export class AuthController {
     description: 'Something is invalid on the request body',
   })
   async signUp(@Body() signUpDto: SignUpDto): Promise<IMessage> {
-    await this.authService.signUp(signUpDto);
+    await this.authService.signUp(signUpDto.email, signUpDto.password);
     return {
-      message: 'User created successfully',
+      message: 'User activation email sent',
+    };
+  }
+
+  @Public()
+  @Post('activate/:token')
+  @ApiOkResponse({
+    description: 'The user has been activated',
+  })
+  @HttpCode(HttpStatus.OK)
+  async activateToken(@Param('token') token: string) {
+    await this.authService.activateToken(token);
+    return {
+      message: 'User activated successfully',
     };
   }
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import { IsEmail, IsString, Length, Matches, MaxLength } from 'class-validator';
 import { PASSWORD_REGEX } from '../../common/consts/regex.const';
 
 export class ResetPasswordDto {
@@ -30,6 +30,6 @@ export class ResetPasswordDto {
   password!: string;
 
   @IsString()
-  @Length(6, 6)
+  @MaxLength(6)
   verificationCode!: string;
 }

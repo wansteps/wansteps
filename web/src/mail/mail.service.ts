@@ -14,6 +14,7 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DrizzleAsyncProvider } from '../drizzle/drizzle.provider';
 import * as schema from '../drizzle/schema';
 import { IMailVerification } from './interface/mail-verification.interface';
+import { IMail } from './interface/mail.interface';
 
 @Injectable()
 export class MailService {
@@ -44,15 +45,15 @@ export class MailService {
       .filter((email) => email.length > 0);
   }
 
-  async sendVerificationCode({ email, code }: IMailVerification) {
+  async send({ to, subject, htmlBody }: IMail) {
     const singleSendMailRequest = new SingleSendMailRequest({
       accountName: this.configService.get<string>('MAIL_FROM'),
       fromAlias: this.configService.get<string>('MAIL_FROM_NAME'),
       addressType: 1,
       replyToAddress: false,
-      toAddress: email,
-      subject: '验证码',
-      htmlBody: `您的验证码是：${code}`,
+      toAddress: to,
+      subject,
+      htmlBody,
     });
     const runtime = new RuntimeOptions({});
     try {

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
@@ -22,6 +23,8 @@ import { Inject } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly userService: UserService,
     @Inject(DrizzleAsyncProvider) private db: NodePgDatabase<typeof schema>,
@@ -40,13 +43,47 @@ export class AuthService {
     return tokens;
   }
 
-  async signUp({ email, verificationCode, password }: SignUpDto) {
+  async signUp(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
     if (user) {
       throw new ConflictException('Email already in use');
     }
-    await this.mailService.verifyCode(email, verificationCode);
-    return await this.userService.create({ name: 'nickname', email, password });
+    this.sendActivateToken(email, password);
+  }
+
+  async sendActivateToken(email: string, password: string) {
+    const payload = { email, password } as SignUpDto;
+    const token = await this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_ACTIVATE_TOKEN_SECRET_KEY'),
+      expiresIn: '2h',
+    });
+    this.mailService.send({
+      to: email,
+      subject: '激活账号',
+      htmlBody: `您的激活链接是：${this.configService.get('WEB_DOMAIN')}/activate/${token}`,
+    });
+  }
+
+  async activateToken(token: string) {
+    let payload: SignUpDto;
+    try {
+      payload = this.jwtService.verify(token, {
+        secret: this.configService.get('JWT_ACTIVATE_TOKEN_SECRET_KEY'),
+      }) as SignUpDto;
+    } catch (error) {
+      this.logger.debug(error);
+      throw new BadRequestException('Invalid token');
+    }
+    const { email, password } = payload;
+    const user = await this.userService.findByEmail(email);
+    if (user) {
+      throw new ConflictException('Email already in use');
+    }
+    await this.userService.create({
+      name: email.split('@')[0],
+      email,
+      password,
+    });
   }
 
   async refreshTokens(userId: number, refreshToken: string) {
