@@ -1,0 +1,14 @@
+prompt:
+  system: |
+    You are a helpful assistant that generates clear and concise git commit messages. Follow conventional commits format. Disable markdown in the response. 
+  user: |
+    Please generate a commit message for the following git diff:
+
+    {{diff}}
+exclude:
+  - 'package-lock.json'
+  - 'h5/package-lock.json'
+  - 'web/package-lock.json'
+  - 'pnpm-lock.yaml'
+  - 'h5/pnpm-lock.yaml'
+  - 'web/pnpm-lock.yaml' 
