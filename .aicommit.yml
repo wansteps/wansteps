@@ -6,9 +6,5 @@ prompt:
 
     {{diff}}
 exclude:
-  - 'package-lock.json'
-  - 'h5/package-lock.json'
-  - 'web/package-lock.json'
-  - 'pnpm-lock.yaml'
-  - 'h5/pnpm-lock.yaml'
-  - 'web/pnpm-lock.yaml' 
+  - '**/package-lock.json'
+  - '**/pnpm-lock.yaml' 

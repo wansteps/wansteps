@@ -15,6 +15,7 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
   UPDATE_TOAST: "UPDATE_TOAST",
@@ -126,7 +127,7 @@ export const reducer = (state: State, action: Action): State => {
   }
 }
 
-const listeners: Array<(state: State) => void> = []
+const listeners: Array<(_state: State) => void> = []
 
 let memoryState: State = { toasts: [] }
 

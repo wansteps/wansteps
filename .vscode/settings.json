@@ -8,5 +8,6 @@
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "never"
   },
-  "npm.packageManager": "auto"
+  "npm.packageManager": "pnpm",
+  "windsurf.autoExecutionPolicy": "auto"
 }
